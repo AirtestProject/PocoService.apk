@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name">PocoService</string>
-    <string name="view_hierarchy_service_name">PocoViewHierarchy</string>
-    <string name="poco_view_hierarchy_service_description">Poco 自动化测试UI树遍历</string>
 </resources>

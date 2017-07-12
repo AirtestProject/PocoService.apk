@@ -22,15 +22,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:label="@string/view_hierarchy_service_name"
-            android:name=".MyAccessibilityService"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data android:name="android.accessibilityservice" android:resource="@xml/view_hierarchy" />
-        </service>
     </application>
 
 </manifest>
