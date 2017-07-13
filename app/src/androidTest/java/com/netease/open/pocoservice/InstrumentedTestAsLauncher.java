@@ -14,17 +14,21 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.netease.open.pocoservice.impl.Dumper;
+import com.netease.open.poco.impl.Dumper;
+import com.netease.open.poco.impl.PocoUiautomation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
+import org.junit.experimental.theories.internal.BooleanSupplier;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -41,10 +45,14 @@ public class InstrumentedTestAsLauncher {
     public void launch() throws Exception {
         Instrumentation ins = InstrumentationRegistry.getInstrumentation();
         UiAutomation ui = ins.getUiAutomation();
+        Context context = InstrumentationRegistry.getTargetContext();
 
         new App(InstrumentationRegistry.getTargetContext(), ui);
 
         RpcServer rpc = new RpcServer("0.0.0.0", 10081);
+        rpc.export("poco-uiautomation-framework", new PocoUiautomation(context, ui));
+
+
         rpc.export("rpc-object-test", 123);
         rpc.export("uiautomation", ui);
         rpc.export("dumper", new Dumper(ui));
@@ -101,7 +109,7 @@ public class InstrumentedTestAsLauncher {
             switch (path) {
                 case "/hierarchy":
                     try {
-                        ret = this.dumper.dumpHierarchy(this.ui.getRootInActiveWindow(), null, 0).toString();
+                        ret = this.dumper.dumpHierarchyImpl(this.ui.getRootInActiveWindow(), null, 0).toString();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

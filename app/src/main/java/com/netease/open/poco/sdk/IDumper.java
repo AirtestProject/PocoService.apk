@@ -1,4 +1,4 @@
-package com.netease.open.pocoservice.sdk;
+package com.netease.open.poco.sdk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,5 +11,5 @@ public interface IDumper <NodeType> {
 
     NodeType root();
 
-    JSONObject dumpHierarchy(NodeType root, String depthStr, int childIndex) throws JSONException;
+    JSONObject dumpHierarchy() throws JSONException;
 }

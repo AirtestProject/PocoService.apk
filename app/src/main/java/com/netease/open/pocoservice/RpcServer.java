@@ -3,6 +3,8 @@ package com.netease.open.pocoservice;
 import android.annotation.TargetApi;
 import android.util.JsonReader;
 
+import com.google.gson.GsonBuilder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,9 +15,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -58,6 +63,7 @@ public class RpcServer extends NanoHTTPD {
         }
     }
 
+    @TargetApi(19)
     public JSONObject onRequest(JSONObject req) {
         JSONObject resp = null;
         String sessionId = null;
@@ -85,9 +91,11 @@ public class RpcServer extends NanoHTTPD {
             return resp;
         }
 
+        boolean shouldCacheIntermediateObj = method.length() != 0;
+        Object _this = obj;
+        String _overloadMethodName = "";
+        List<java.lang.reflect.Method> _overloadMethods = new LinkedList<>();
         try {
-            boolean shouldCacheIntermediateObj = method.length() != 0;
-            Object _this = obj;
             for (int i = 0; i < method.length(); i++) {
                 JSONArray operation = method.getJSONArray(i);
                 String operator = operation.getString(0);
@@ -100,40 +108,70 @@ public class RpcServer extends NanoHTTPD {
                         return resp;
                     }
 
-                    java.lang.reflect.Method func = null;
                     for (java.lang.reflect.Method m : objCls.getDeclaredMethods()) {
-                        // 目前的机制只能支持单一重载方法的调用
-                        // 之后再考虑得到参数后再对方法进行筛选
+                        // 先把所有名字相同的方法都存起来，在调用的时候根据参数类型去选出重载的方法
                         if (m.getName().equals(params)) {
-                            func = m;
-                            break;
+                            _overloadMethods.add(m);
                         }
+                        _overloadMethodName = params;
                     }
-                    if (func == null) {
+                    if (_overloadMethods.size() == 0) {
                         Field field = objCls.getDeclaredField(params);
                         obj = field.get(obj);
-                    } else {
-                        obj = func;
                     }
 
                 } else if (operator.equals("call")) {
-                    ArrayList<Object> calcParams = new ArrayList<>();
+                    // 构造要调用的参数
+                    ArrayList<Object> calcAuguments = new ArrayList<>();
                     JSONArray params = operation.getJSONArray(1);
                     for (int j = 0; j < params.length(); j++) {
                         String paramType = params.getJSONArray(j).getString(0);
                         Object param = params.getJSONArray(j).get(1);
                         if (paramType.equals("uri")) {
                             Object value = this.get(param.toString());
-                            calcParams.add(value);
+                            calcAuguments.add(value);
                         } else {
                             if (param.equals(JSONObject.NULL)) {
                                 param = null;
                             }
-                            calcParams.add(param);
+                            calcAuguments.add(param);
                         }
                     }
-                    java.lang.reflect.Method func = (java.lang.reflect.Method) obj;
-                    obj = func.invoke(_this, calcParams.toArray());
+
+                    // 根据参数类型选出重载方法
+                    java.lang.reflect.Method func = null;
+                    for (java.lang.reflect.Method m : _overloadMethods) {
+                        Class<?>[] paramTypes = m.getParameterTypes();
+                        if (paramTypes.length == calcAuguments.size()) {
+                            boolean matched = true;
+//                            System.out.println(m);
+                            for (int j = 0; j < paramTypes.length; j++) {
+                                Class<?> parType = paramTypes[j];
+                                Class<?> argType = calcAuguments.get(j).getClass();
+//                                System.out.println(String.format("%s | %s | %s | %s | %s", _overloadMethodName, parType, argType, parType.isAssignableFrom(argType), primitiveTypeAssignableFrom(parType, argType)));
+                                if (parType.isArray() != argType.isArray()) {
+                                    matched = false;
+                                    break;
+                                }
+                                if (!parType.isAssignableFrom(argType) && !primitiveTypeAssignableFrom(parType, argType)) {
+                                    matched = false;
+                                    break;
+                                }
+                            }
+                            if (matched) {
+                                func = m;
+                                break;
+                            }
+                        }
+                    }
+                    _overloadMethods.clear();
+
+                    if (func != null) {
+                        obj = func.invoke(_this, calcAuguments.toArray());
+                    } else {
+                        throw new NoSuchMethodException(String.format("\"%s\" does not have (overload)method name \"%s\", parameters are %s", obj, _overloadMethodName, calcAuguments));
+                    }
+                    _overloadMethodName = "";
 
                 } else if (operator.equals("getitem")) {
                     try {
@@ -198,8 +236,8 @@ public class RpcServer extends NanoHTTPD {
             }
 
 
-            Object wrappedObj = wrap(obj);
-            if (wrappedObj == null) {
+            boolean serializable = jsonSerializable(obj);
+            if (!serializable) {
                 Object intermediaObj = null;
                 String intermediaUri = null;
                 if (shouldCacheIntermediateObj) {
@@ -209,7 +247,7 @@ public class RpcServer extends NanoHTTPD {
                 }
                 resp = this.buildResponse(reqId, sessionId, String.format("<Rpc remote object proxy of %s>", obj.toString()), intermediaUri);
             } else {
-                resp = this.buildResponse(reqId, sessionId, wrappedObj, null);
+                resp = this.buildResponse(reqId, sessionId, JSONObject.wrap(obj), null);
             }
 
         } catch (Exception e) {
@@ -217,6 +255,21 @@ public class RpcServer extends NanoHTTPD {
         }
 
         return resp;
+    }
+
+    private static boolean primitiveTypeAssignableFrom(Class<?> parType, Class<?> argType) {
+        if (parType.isPrimitive() || argType.isPrimitive()) {
+            String[] parTypeNameArray = parType.getName().toLowerCase().split(Pattern.quote("."));
+            String[] argTypeNameArray = argType.getName().toLowerCase().split(Pattern.quote("."));
+            String parTypeName = parTypeNameArray[parTypeNameArray.length - 1];
+            String argTypeName = argTypeNameArray[argTypeNameArray.length - 1];
+            if (parTypeName.length() < argTypeName.length()) {
+                return argTypeName.startsWith(parTypeName);
+            } else {
+                return parTypeName.startsWith(argTypeName);
+            }
+        }
+        return false;
     }
 
     private JSONObject buildResponse(String id, String sessionId, Object result, String uri) {
@@ -229,6 +282,7 @@ public class RpcServer extends NanoHTTPD {
                 ret.put("uri", uri);
             }
         } catch (JSONException e) {
+            // 不太可能会进这里
             e.printStackTrace();
         }
         return ret;
@@ -236,6 +290,9 @@ public class RpcServer extends NanoHTTPD {
 
     private JSONObject buildErrorResponse(String id, String sessionId, String errType, String errMsg, String errStack, String traceback) {
         JSONObject ret = new JSONObject();
+        if (errMsg == null) {
+            errMsg = "";
+        }
         try {
             ret.put("id", id);
             ret.put("session_id", sessionId);
@@ -247,6 +304,7 @@ public class RpcServer extends NanoHTTPD {
             err.put("tb", traceback);
             ret.put("errors", err);
         } catch (JSONException e) {
+            // 不太可能会进这里
             e.printStackTrace();
         }
         return ret;
@@ -269,42 +327,55 @@ public class RpcServer extends NanoHTTPD {
         this.objUriStore_.put(uri, obj);
     }
 
-    @TargetApi(19)
-    private static Object wrap(Object o) {
+    public static boolean jsonSerializable(Object o) {
         if (o == null) {
-            return JSONObject.NULL;
+            return true;
         }
         if (o instanceof JSONArray || o instanceof JSONObject) {
-            return o;
+            return true;
         }
         if (o.equals(JSONObject.NULL)) {
-            return o;
+            return true;
         }
-        try {
-            if (o instanceof Collection) {
-                return new JSONArray((Collection) o);
-            } else if (o.getClass().isArray()) {
-                return new JSONArray(o);
+
+        if (o instanceof List) {
+            for (Object oo : (List) o) {
+                boolean subElementSerializable = jsonSerializable(oo);
+                if (!subElementSerializable) {
+                    return false;
+                }
             }
-            if (o instanceof Map) {
-                return new JSONObject((Map) o);
+            return true;
+        } else if (o.getClass().isArray()) {
+            int length = Array.getLength(o);
+            for (int i = 0; i < length; i ++) {
+                Object arrayElement = Array.get(o, i);
+                if (!jsonSerializable(arrayElement)) {
+                    return false;
+                }
             }
-            if (o instanceof Boolean ||
-                    o instanceof Byte ||
-                    o instanceof Character ||
-                    o instanceof Double ||
-                    o instanceof Float ||
-                    o instanceof Integer ||
-                    o instanceof Long ||
-                    o instanceof Short ||
-                    o instanceof String) {
-                return o;
-            }
-            if (o.getClass().getPackage().getName().startsWith("java.")) {
-                return o.toString();
-            }
-        } catch (Exception ignored) {
+            return true;
         }
-        return null;
+        if (o instanceof Map) {
+            Map mapO = ((Map) o);
+            for (Object k : mapO.entrySet()) {
+                if (!jsonSerializable(k) || !jsonSerializable(mapO.get(k))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        if (o instanceof Boolean ||
+                o instanceof Byte ||
+                o instanceof Character ||
+                o instanceof Double ||
+                o instanceof Float ||
+                o instanceof Integer ||
+                o instanceof Long ||
+                o instanceof Short ||
+                o instanceof String) {
+            return true;
+        }
+        return false;
     }
 }

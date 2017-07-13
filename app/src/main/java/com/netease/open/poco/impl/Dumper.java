@@ -1,11 +1,11 @@
-package com.netease.open.pocoservice.impl;
+package com.netease.open.poco.impl;
 
 import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.graphics.Rect;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.netease.open.pocoservice.sdk.IDumper;
+import com.netease.open.poco.sdk.IDumper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +32,11 @@ public class Dumper implements IDumper<AccessibilityNodeInfo> {
     }
 
     @Override
-    public JSONObject dumpHierarchy(AccessibilityNodeInfo node, String depthStr, int childIndex) throws JSONException {
+    public JSONObject dumpHierarchy() throws JSONException {
+        return this.dumpHierarchyImpl(this.ui.getRootInActiveWindow(), null, 0);
+    }
+
+    public JSONObject dumpHierarchyImpl(AccessibilityNodeInfo node, String depthStr, int childIndex) throws JSONException {
         if (node == null) {
             // return if still null
             return null;
@@ -63,6 +67,7 @@ public class Dumper implements IDumper<AccessibilityNodeInfo> {
         payload.put("focused", node.isFocused());
         payload.put("editalbe", node.isEditable());
         payload.put("selected", node.isSelected());
+        payload.put("touchable", node.isClickable());
         payload.put("longClickable", node.isLongClickable());
 
         Rect bound = new Rect();
@@ -112,7 +117,7 @@ public class Dumper implements IDumper<AccessibilityNodeInfo> {
         if (childCount > 0) {
             for (int i = 0; i < childCount; i++) {
                 AccessibilityNodeInfo child = node.getChild(i);
-                children.put(dumpHierarchy(child, thisDepthStr, i));
+                children.put(this.dumpHierarchyImpl(child, thisDepthStr, i));
             }
             result.put("children", children);
         }
