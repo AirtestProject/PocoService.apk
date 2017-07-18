@@ -2,7 +2,6 @@ package com.netease.open.poco.impl;
 
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.google.gson.Gson;
 import com.netease.open.poco.sdk.DefaultMatcher;
 import com.netease.open.poco.sdk.IAttributor;
 import com.netease.open.poco.sdk.IDumper;

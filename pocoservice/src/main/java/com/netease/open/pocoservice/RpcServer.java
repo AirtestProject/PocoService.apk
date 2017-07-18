@@ -3,8 +3,6 @@ package com.netease.open.pocoservice;
 import android.annotation.TargetApi;
 import android.util.JsonReader;
 
-import com.google.gson.GsonBuilder;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -176,17 +174,15 @@ public class RpcServer extends NanoHTTPD {
                 } else if (operator.equals("getitem")) {
                     try {
                         int params = operation.getInt(1);
-                        obj = ((Object[]) obj)[params];
-                    } catch (ClassCastException __e) {
                         try {
-                            int params = operation.getInt(1);
+                            obj = ((Object[]) obj)[params];
+                        } catch (ClassCastException e) {
                             obj = ((List) obj).get(params);
-                        } catch (ClassCastException __e2) {
-                            String params = operation.getString(1);
-                            obj = ((Map<String, Object>) obj).get(params);
                         }
+                    } catch (JSONException e) {
+                        String params = operation.getString(1);
+                        obj = ((Map<String, Object>) obj).get(params);
                     }
-
                 } else if (operator.equals("len")) {
                     try {
                         obj = ((Object[]) obj).length;
