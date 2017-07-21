@@ -5,6 +5,6 @@ package com.netease.open.poco.sdk;
  */
 
 public interface IScreen {
-    int[] getSize();
-    Object getScreen();
+    Object getScreen(int width);
+    int[] getPortSize();
 }

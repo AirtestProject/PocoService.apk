@@ -1,8 +1,9 @@
-package com.netease.open.pocoservice;
+package com.netease.open.hrpc.backend;
 
 import android.annotation.TargetApi;
 import android.util.JsonReader;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +39,6 @@ public class RpcServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-
         Map<String, String> body = new HashMap<>();
         try {
             session.parseBody(body);
@@ -106,7 +106,7 @@ public class RpcServer extends NanoHTTPD {
                         return resp;
                     }
 
-                    for (java.lang.reflect.Method m : objCls.getDeclaredMethods()) {
+                    for (java.lang.reflect.Method m : objCls.getMethods()) {
                         // 先把所有名字相同的方法都存起来，在调用的时候根据参数类型去选出重载的方法
                         if (m.getName().equals(params)) {
                             _overloadMethods.add(m);

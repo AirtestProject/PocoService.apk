@@ -1,4 +1,4 @@
-package com.netease.open.poco.sdk;
+package com.netease.open.poco.sdk.simple;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,5 +11,4 @@ public interface ISelector <NodeType> {
 
     NodeType[] select(JSONArray cond) throws JSONException;
     NodeType[] select(JSONArray cond, boolean multiple) throws JSONException;
-    NodeType[] make_selection(NodeType n);
 }

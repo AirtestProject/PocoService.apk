@@ -1,4 +1,4 @@
-package com.netease.open.poco.sdk;
+package com.netease.open.poco.sdk.simple;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,17 +10,15 @@ import java.util.Map;
  * Created by adolli on 2017/7/13.
  */
 
-public class DefaultMatcher<NodeType> implements IMatcher<NodeType> {
+public class DefaultMatcher implements IMatcher {
     private Map<String, Comparator> predicates = new HashMap<>();
-    private IAttributor<NodeType> attributor = null;
 
-    public DefaultMatcher(IAttributor<NodeType> attributor) {
+    public DefaultMatcher() {
         predicates.put("attr=", new EqualizationComparator());
         predicates.put("attr.*=", new RegexpComparator());
-        this.attributor = attributor;
     }
 
-    public boolean match(JSONArray cond, NodeType node) throws JSONException {
+    public boolean match(JSONArray cond, INode node) throws JSONException {
         String op = cond.getString(0);
         JSONArray args = cond.getJSONArray(1);
 
@@ -48,7 +46,7 @@ public class DefaultMatcher<NodeType> implements IMatcher<NodeType> {
         if (comparator != null) {
             String attribute = args.getString(0);
             Object value = args.get(1);
-            Object targetValue = this.attributor.getAttr(node, attribute);
+            Object targetValue = node.getAttr(attribute);
             return comparator.compare(targetValue, value);
         }
 

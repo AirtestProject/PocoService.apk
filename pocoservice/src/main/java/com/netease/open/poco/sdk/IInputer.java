@@ -7,9 +7,10 @@ package com.netease.open.poco.sdk;
 public interface IInputer {
     void keyevent(int keycode);
 
-    void click(int x, int y);
+    void click(float x, float y);
 
-    void longClick(int x, int y);
+    void longClick(float x, float y);
+    void longClick(float x, float y, float duration);
 
-    void swipe(int x1, int y1, int x2, int y2, int durationInMillis);
+    void swipe(float x1, float y1, float x2, float y2, float duration);
 }
