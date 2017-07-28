@@ -167,7 +167,7 @@ public class RpcServer extends NanoHTTPD {
                     if (func != null) {
                         obj = func.invoke(_this, calcAuguments.toArray());
                     } else {
-                        throw new NoSuchMethodException(String.format("\"%s\" does not have (overload)method name \"%s\", parameters are %s", obj, _overloadMethodName, calcAuguments));
+                        throw new NoSuchMethodException(String.format("\"%s\" does not have (overload)method name \"%s\", arguments are %s", obj, _overloadMethodName, calcAuguments));
                     }
                     _overloadMethodName = "";
 

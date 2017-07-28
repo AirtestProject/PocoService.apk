@@ -7,10 +7,12 @@ package com.netease.open.poco.sdk;
 public interface IInputer {
     void keyevent(int keycode);
 
-    void click(float x, float y);
+    // java里默认会把浮点当做double，默认都定义成double型参数，反射时的多态匹配优先匹配double型
+    void click(double x, double y);
 
-    void longClick(float x, float y);
-    void longClick(float x, float y, float duration);
+    void longClick(double x, double y);
+    void longClick(double x, double y, double duration);
 
-    void swipe(float x1, float y1, float x2, float y2, float duration);
+    void swipe(double x1, double y1, double x2, double y2, double duration);
+
 }

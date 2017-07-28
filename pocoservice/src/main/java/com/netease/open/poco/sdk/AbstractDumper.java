@@ -19,17 +19,13 @@ public abstract class AbstractDumper implements IDumper<AbstractNode> {
     public static String TAG = "AbstractDumper";
 
     public JSONObject dumpHierarchy() throws JSONException {
-        return this.dumpHierarchyImpl(this.getRoot(), null, 0);
+        return this.dumpHierarchyImpl(this.getRoot());
     }
 
-    public JSONObject dumpHierarchyImpl(AbstractNode node, String depthStr, int childIndex) throws JSONException {
+    public JSONObject dumpHierarchyImpl(AbstractNode node) throws JSONException {
         if (node == null) {
             // return if still null
             return null;
-        }
-
-        if (depthStr == null) {
-            depthStr = "";
         }
 
         JSONObject payload = new JSONObject();
@@ -37,19 +33,12 @@ public abstract class AbstractDumper implements IDumper<AbstractNode> {
             payload.put(attr.getKey(), attr.getValue());
         }
 
-        // depthstr 准备移除
-        JSONObject zOrders = (JSONObject) node.getAttr("zOrders");
-        String thisDepthStr = String.format("%s|%02x-%02x-%02x", depthStr, zOrders.getInt("global"), zOrders.getInt("local"), childIndex);
-        payload.put("depthStr", thisDepthStr);
-
         JSONObject result = new JSONObject();
-
         JSONArray children = new JSONArray();
-        int i = 0;
+
         for (AbstractNode child : node.getChildren()) {
             if ((boolean) child.getAttr("visible")) {
-                children.put(this.dumpHierarchyImpl(child, thisDepthStr, i));
-                i++;
+                children.put(this.dumpHierarchyImpl(child));
             }
         }
         if (children.length() > 0) {
