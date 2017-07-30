@@ -42,6 +42,7 @@ public class Node extends AbstractNode {
             "selected",
             "touchable",
             "longClickable",
+            "boundsInParent",
     };
 
     private Context context;
@@ -49,20 +50,7 @@ public class Node extends AbstractNode {
     private int screenWidth_ = 0;
     private int screenHeight_ = 0;
 
-    public Node(Context context, AccessibilityNodeInfo node) {
-        super();
-        this.context = context;
-        this.node = node;
-
-        WindowManager wm = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point dimm = new Point();
-        display.getRealSize(dimm);
-        this.screenWidth_ = dimm.x;
-        this.screenHeight_ = dimm.y;
-    }
-
-    private Node(Context context, AccessibilityNodeInfo node, int screenW, int screenH) {
+    public Node(Context context, AccessibilityNodeInfo node, int screenW, int screenH) {
         super();
         this.context = context;
         this.node = node;
@@ -136,6 +124,16 @@ public class Node extends AbstractNode {
                     size.put(1.0 * bound1.height() / this.screenHeight_);
                 } catch (JSONException e) {}
                 ret = size;
+                break;
+            case "boundsInParent":
+                Rect boundP = new Rect();
+                node.getBoundsInParent(boundP);
+                JSONArray sizeP = new JSONArray();
+                try {
+                    sizeP.put(1.0 * boundP.width() / this.screenWidth_);
+                    sizeP.put(1.0 * boundP.height() / this.screenHeight_);
+                } catch (JSONException e) {}
+                ret = sizeP;
                 break;
             case "scale":
                 JSONArray scale = new JSONArray();

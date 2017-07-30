@@ -1,6 +1,7 @@
 package com.netease.open.pocoservice;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Context;
 import android.util.Log;
@@ -21,6 +22,7 @@ import fi.iki.elonen.NanoHTTPD;
  * Created by adolli on 2017/7/19.
  */
 
+@SuppressLint("NewApi")
 public class ServerForHierarchyViewer extends NanoHTTPD {
     private static final String TAG = ServerForHierarchyViewer.class.getName();
 
@@ -86,6 +88,14 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                     width = Integer.parseInt(paramWidth);
                 }
                 ret = (String) this.screen.getScreen(width);
+                break;
+            case "/hierarchy_size":
+                int[] size2 = this.dumper.getPortSize();
+                JSONArray jsize2 = new JSONArray();
+                jsize2.put(size2[0]);
+                jsize2.put(size2[1]);
+                ret = jsize2.toString();
+                mimeType = "application/json";
                 break;
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, ret);

@@ -25,7 +25,8 @@ public class Dumper extends AbstractDumper {
 
     @Override
     public AbstractNode getRoot() {
-        return new Node(this.context, this.ui.getRootInActiveWindow());
+        int[] portSize = getPortSize();
+        return new Node(this.context, this.ui.getRootInActiveWindow(), portSize[0], portSize[1]);
     }
 
     @Override
