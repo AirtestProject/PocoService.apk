@@ -1,6 +1,7 @@
 package com.netease.open.poco.sdk.simple;
 
 import com.netease.open.poco.sdk.AbstractNode;
+import com.netease.open.poco.sdk.exceptions.NodeHasBeenRemovedException;
 
 /**
  * Created by adolli on 2017/7/19.
@@ -14,6 +15,9 @@ public class Attributor {
     }
 
     public Object getAttr(AbstractNode node, String attrName) {
+        if (node == null) {
+            throw new NodeHasBeenRemovedException(attrName, node);
+        }
         return node.getAttr(attrName);
     }
 
@@ -22,6 +26,9 @@ public class Attributor {
     }
 
     public void setAttr(AbstractNode node, String attrName, Object attrVal) {
+        if (node == null) {
+            throw new NodeHasBeenRemovedException(attrName, node);
+        }
         node.setAttr(attrName, attrVal);
     }
 }
