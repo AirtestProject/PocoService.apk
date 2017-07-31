@@ -35,9 +35,6 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
 
     public ServerForHierarchyViewer(Context context, UiAutomation ui) throws IOException {
         super("0.0.0.0", 10080);  // 将端口forward出来访问
-        Log.i(TAG, "server listening on 127.0.0.1:10080");
-        start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
-        Log.i(TAG, "server started");
 
         this.context = context;
         this.ui = ui;
@@ -56,6 +53,10 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
 
         this.ui.setServiceInfo(accessibilityServiceInfo);
+
+        Log.i(TAG, "server listening on 127.0.0.1:10080");
+        start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+        Log.i(TAG, "server started");
     }
 
     @Override
