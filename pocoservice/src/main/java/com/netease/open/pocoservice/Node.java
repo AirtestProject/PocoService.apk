@@ -11,6 +11,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.netease.open.poco.sdk.AbstractNode;
 import com.netease.open.poco.sdk.exceptions.NoSuchAttributeException;
+import com.netease.open.poco.sdk.exceptions.NodeHasBeenRemovedException;
 import com.netease.open.poco.sdk.exceptions.UnableToSetAttributeException;
 
 import org.json.JSONArray;
@@ -75,6 +76,10 @@ public class Node extends AbstractNode {
 
     @Override
     public void setAttr(String attrName, Object attrVal) throws UnableToSetAttributeException {
+        if (this.node == null) {
+            throw new NodeHasBeenRemovedException(attrName, null);
+        }
+
         switch (attrName) {
             case "text":
                 this.node.setText((String) attrVal);
@@ -86,6 +91,10 @@ public class Node extends AbstractNode {
 
     @Override
     public Object getAttr(String attrName) throws NoSuchAttributeException {
+        if (this.node == null) {
+            throw new NodeHasBeenRemovedException(attrName, null);
+        }
+
         Object ret = null;
         switch (attrName) {
             case "name":
