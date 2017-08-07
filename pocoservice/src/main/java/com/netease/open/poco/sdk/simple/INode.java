@@ -1,6 +1,7 @@
 package com.netease.open.poco.sdk.simple;
 
 import com.netease.open.poco.sdk.exceptions.NoSuchAttributeException;
+import com.netease.open.poco.sdk.exceptions.NodeHasBeenRemovedException;
 import com.netease.open.poco.sdk.exceptions.UnableToSetAttributeException;
 
 /**
@@ -8,6 +9,6 @@ import com.netease.open.poco.sdk.exceptions.UnableToSetAttributeException;
  */
 
 public interface INode {
-    Object getAttr(String attrName) throws NoSuchAttributeException;
-    void setAttr(String attrName, Object value) throws UnableToSetAttributeException;
+    Object getAttr(String attrName) throws NoSuchAttributeException, NodeHasBeenRemovedException;
+    void setAttr(String attrName, Object value) throws UnableToSetAttributeException, NodeHasBeenRemovedException;
 }

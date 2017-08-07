@@ -5,6 +5,7 @@ import android.app.UiAutomation;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.support.annotation.Nullable;
 import android.view.Display;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -60,7 +61,12 @@ public class Node extends AbstractNode {
     }
 
     @Override
+    @Nullable
     public AbstractNode getParent() {
+        AccessibilityNodeInfo parent = this.node.getParent();
+        if (parent == null) {
+            return null;
+        }
         return new Node(this.context, this.node.getParent(), this.screenWidth_, this.screenHeight_);
     }
 
@@ -75,7 +81,7 @@ public class Node extends AbstractNode {
     }
 
     @Override
-    public void setAttr(String attrName, Object attrVal) throws UnableToSetAttributeException {
+    public void setAttr(String attrName, Object attrVal) throws UnableToSetAttributeException, NodeHasBeenRemovedException {
         if (this.node == null) {
             throw new NodeHasBeenRemovedException(attrName, null);
         }
@@ -90,7 +96,7 @@ public class Node extends AbstractNode {
     }
 
     @Override
-    public Object getAttr(String attrName) throws NoSuchAttributeException {
+    public Object getAttr(String attrName) throws NoSuchAttributeException, NodeHasBeenRemovedException {
         if (this.node == null) {
             throw new NodeHasBeenRemovedException(attrName, null);
         }

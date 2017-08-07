@@ -34,6 +34,10 @@ public class Selector implements ISelector<AbstractNode> {
 
     private List<AbstractNode> selectImpl(JSONArray cond, boolean multiple, AbstractNode root, IMatcher matcher, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
         List<AbstractNode> result = new LinkedList<>();
+        if (root == null) {
+            return result;
+        }
+
         String op = cond.getString(0);
         JSONArray args = cond.getJSONArray(1);
 
