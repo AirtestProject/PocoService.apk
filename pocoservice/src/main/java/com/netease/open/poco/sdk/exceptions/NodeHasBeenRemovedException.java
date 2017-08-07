@@ -6,6 +6,6 @@ package com.netease.open.poco.sdk.exceptions;
 
 public class NodeHasBeenRemovedException extends RuntimeException {
     public NodeHasBeenRemovedException(String attrName, Object node) {
-        super("Node was no longer alive. Please re-select.");
+        super(String.format("Node was no longer alive when query attribute \"%s\". Please re-select.", attrName));
     }
 }
