@@ -47,7 +47,7 @@ public class Node extends AbstractNode {
     };
 
     private Context context;
-    private AccessibilityNodeInfo node;
+    public AccessibilityNodeInfo node;
     private int screenWidth_ = 0;
     private int screenHeight_ = 0;
 
@@ -112,7 +112,21 @@ public class Node extends AbstractNode {
                 ret = node.getClassName().toString();
                 break;
             case "visible":
-                ret = node.isVisibleToUser();
+                boolean visible = node.isVisibleToUser();
+                if (!visible) {
+                    ret = false;
+                } else {
+                    ret = true;
+                    AccessibilityNodeInfo parent = node.getParent();
+                    while (parent != null) {
+                        boolean parentVisible = parent.isVisibleToUser();
+                        if (!parentVisible) {
+                            ret = false;
+                            break;
+                        }
+                        parent = parent.getParent();
+                    }
+                }
                 break;
             case "pos":
                 Rect bound = new Rect();
