@@ -1,6 +1,7 @@
 package com.netease.open.poco.sdk.simple;
 
 import com.netease.open.poco.sdk.AbstractNode;
+import com.netease.open.poco.sdk.exceptions.NodeHasBeenRemovedException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -80,11 +81,26 @@ public class Selector implements ISelector<AbstractNode> {
 
     private boolean selectTraverse(JSONArray cond, AbstractNode node, IMatcher matcher, List<AbstractNode> outResult, boolean multiple, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
         // 剪掉不可见节点branch
-        if (onlyVisibleNode && !((boolean) node.getAttr("visible"))) {
-            return false;
+        if (onlyVisibleNode) {
+            try {
+                boolean visible = (boolean) node.getAttr("visible");
+                if (!visible) {
+                    return false;
+                }
+            } catch (NodeHasBeenRemovedException e) {
+                // 如果Node被移除，表示traverse过程中界面发生了变化，直接返回true停止搜索
+                return true;
+            }
         }
 
-        if (matcher.match(cond, node)) {
+        boolean matched = false;
+        try {
+            matched = matcher.match(cond, node);
+        } catch (NodeHasBeenRemovedException e) {
+            // 如果Node被移除，表示traverse过程中界面发生了变化，直接返回true停止搜索
+            return true;
+        }
+        if (matched) {
             if (includeRoot) {
                 outResult.add(node);
                 if (!multiple) {

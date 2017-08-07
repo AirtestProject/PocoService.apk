@@ -117,6 +117,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
 //                UiSelector sel = new UiSelector();
 //                sel.resourceId("com.netease.my:id/netease_mpay__login_urs");
 //                UiObject obj = uidev2.findObject(sel);
+//                obj.clearTextField();
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, ret);
     }
