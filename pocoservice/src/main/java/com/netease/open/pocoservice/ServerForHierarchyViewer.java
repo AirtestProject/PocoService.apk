@@ -4,12 +4,18 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Context;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
+import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiSelector;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.support.test.InstrumentationRegistry;
 
 import com.netease.open.poco.sdk.AbstractNode;
 import com.netease.open.poco.sdk.IScreen;
 import com.netease.open.poco.sdk.simple.IDumper;
+import com.netease.open.poco.sdk.simple.Selector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,6 +104,19 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 ret = jsize2.toString();
                 mimeType = "application/json";
                 break;
+            case "/hierarchy_size2":
+                UiDevice uidev = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+                JSONArray jsize3 = new JSONArray();
+                jsize3.put(uidev.getDisplayHeight());
+                jsize3.put(uidev.getDisplayWidth());
+                ret = jsize3.toString();
+                mimeType = "application/json";
+                break;
+//            case "/test_set_text":
+//                UiDevice uidev2 = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+//                UiSelector sel = new UiSelector();
+//                sel.resourceId("com.netease.my:id/netease_mpay__login_urs");
+//                UiObject obj = uidev2.findObject(sel);
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, ret);
     }

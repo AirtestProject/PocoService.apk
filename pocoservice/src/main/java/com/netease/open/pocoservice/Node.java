@@ -5,7 +5,11 @@ import android.app.UiAutomation;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.view.Display;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -88,7 +92,12 @@ public class Node extends AbstractNode {
 
         switch (attrName) {
             case "text":
-                this.node.setText((String) attrVal);
+                if (!this.node.isEditable()) {
+                    throw new UnableToSetAttributeException(attrName, this.node, "this node is not editable");
+                }
+                Bundle args = new Bundle();
+                args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, attrVal.toString());
+                this.node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args);
                 break;
             default:
                 throw new UnableToSetAttributeException(attrName, this.node);
