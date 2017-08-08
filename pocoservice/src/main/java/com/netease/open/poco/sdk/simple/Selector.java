@@ -18,8 +18,12 @@ public class Selector implements ISelector<AbstractNode> {
     private IMatcher matcher;
 
     public Selector(IDumper<AbstractNode> dumper) {
+        this(dumper, new DefaultMatcher());
+    }
+
+    public Selector(IDumper<AbstractNode> dumper, IMatcher matcher) {
         this.dumper = dumper;
-        this.matcher = new DefaultMatcher();
+        this.matcher = matcher;
     }
 
     @Override
@@ -29,11 +33,17 @@ public class Selector implements ISelector<AbstractNode> {
 
     @Override
     public AbstractNode[] select(JSONArray cond, boolean multiple) throws JSONException {
-        List<AbstractNode> result = this.selectImpl(cond, multiple, this.getRoot(), this.matcher, 9999, true, true);
+        List<AbstractNode> result = null;
+        try {
+            result = this.selectImpl(cond, multiple, this.getRoot(), 9999, true, true);
+        } catch (NodeHasBeenRemovedException e) {
+            // 如果Node被移除，表示traverse过程中界面发生了变化，那就直接返回空list，表示找不到
+            result = new LinkedList<>();
+        }
         return makeArray(result);
     }
 
-    private List<AbstractNode> selectImpl(JSONArray cond, boolean multiple, AbstractNode root, IMatcher matcher, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
+    private List<AbstractNode> selectImpl(JSONArray cond, boolean multiple, AbstractNode root, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
         List<AbstractNode> result = new LinkedList<>();
         if (root == null) {
             return result;
@@ -54,7 +64,7 @@ public class Selector implements ISelector<AbstractNode> {
                     if (op.equals("/") && i != 0) {
                         _maxDepth = 1;
                     }
-                    midResult.addAll(this.selectImpl(arg, true, parent, matcher, _maxDepth, onlyVisibleNode, false));
+                    midResult.addAll(this.selectImpl(arg, true, parent, _maxDepth, onlyVisibleNode, false));
                 }
                 parents = midResult;
             }
@@ -63,44 +73,29 @@ public class Selector implements ISelector<AbstractNode> {
             // 兄弟节点选择
             JSONArray query1 = args.getJSONArray(0);
             JSONArray query2 = args.getJSONArray(1);
-            List<AbstractNode> result1 = this.selectImpl(query1, multiple, root, matcher, maxDepth, onlyVisibleNode, includeRoot);
+            List<AbstractNode> result1 = this.selectImpl(query1, multiple, root, maxDepth, onlyVisibleNode, includeRoot);
             for (AbstractNode n : result1) {
-                result.addAll(this.selectImpl(query2, multiple, n.getParent(), matcher, 1, onlyVisibleNode, includeRoot));
+                result.addAll(this.selectImpl(query2, multiple, n.getParent(), 1, onlyVisibleNode, includeRoot));
             }
         } else if (op.equals("index")) {
             JSONArray cond1 = args.getJSONArray(0);
             int i = args.getInt(1);
             result = new LinkedList<>();
-            result.add(this.selectImpl(cond1, multiple, root, matcher, maxDepth, onlyVisibleNode, includeRoot).get(i));
+            result.add(this.selectImpl(cond1, multiple, root, maxDepth, onlyVisibleNode, includeRoot).get(i));
         } else {
-            this.selectTraverse(cond, root, matcher, result, multiple, maxDepth, onlyVisibleNode, includeRoot);
+            this.selectTraverse(cond, root, result, multiple, maxDepth, onlyVisibleNode, includeRoot);
         }
 
         return result;
     }
 
-    private boolean selectTraverse(JSONArray cond, AbstractNode node, IMatcher matcher, List<AbstractNode> outResult, boolean multiple, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
+    private boolean selectTraverse(JSONArray cond, AbstractNode node, List<AbstractNode> outResult, boolean multiple, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
         // 剪掉不可见节点branch
-        if (onlyVisibleNode) {
-            try {
-                boolean visible = (boolean) node.getAttr("visible");
-                if (!visible) {
-                    return false;
-                }
-            } catch (NodeHasBeenRemovedException e) {
-                // 如果Node被移除，表示traverse过程中界面发生了变化，直接返回true停止搜索
-                return true;
-            }
+        if (onlyVisibleNode && !(boolean) node.getAttr("visible")) {
+            return false;
         }
 
-        boolean matched = false;
-        try {
-            matched = matcher.match(cond, node);
-        } catch (NodeHasBeenRemovedException e) {
-            // 如果Node被移除，表示traverse过程中界面发生了变化，直接返回true停止搜索
-            return true;
-        }
-        if (matched) {
+        if (this.matcher.match(cond, node)) {
             if (includeRoot) {
                 outResult.add(node);
                 if (!multiple) {
@@ -116,7 +111,7 @@ public class Selector implements ISelector<AbstractNode> {
         maxDepth -= 1;
 
         for (AbstractNode child : node.getChildren()) {
-            boolean finished = this.selectTraverse(cond, child, matcher, outResult, multiple, maxDepth, onlyVisibleNode, true);
+            boolean finished = this.selectTraverse(cond, child, outResult, multiple, maxDepth, onlyVisibleNode, true);
             if (finished) {
                 return true;
             }
