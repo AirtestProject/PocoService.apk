@@ -11,7 +11,7 @@ import android.support.test.InstrumentationRegistry;
 
 import com.netease.open.libpoco.sdk.AbstractNode;
 import com.netease.open.libpoco.sdk.IScreen;
-import com.netease.open.libpoco.sdk.simple.IDumper;
+import com.netease.open.libpoco.sdk.IDumper;
 
 import org.json.JSONArray;
 import org.json.JSONException;

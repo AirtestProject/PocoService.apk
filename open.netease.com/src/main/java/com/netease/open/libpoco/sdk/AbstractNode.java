@@ -1,7 +1,5 @@
 package com.netease.open.libpoco.sdk;
 
-import com.netease.open.libpoco.sdk.simple.INode;
-
 import java.util.Map;
 
 /**

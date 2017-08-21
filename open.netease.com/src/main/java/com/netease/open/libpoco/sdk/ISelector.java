@@ -1,4 +1,4 @@
-package com.netease.open.libpoco.sdk.simple;
+package com.netease.open.libpoco.sdk;
 
 import org.json.JSONArray;
 import org.json.JSONException;

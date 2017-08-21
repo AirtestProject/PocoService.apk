@@ -1,6 +1,5 @@
-package com.netease.open.libpoco.sdk.simple;
+package com.netease.open.libpoco.sdk;
 
-import com.netease.open.libpoco.sdk.AbstractNode;
 import com.netease.open.libpoco.sdk.exceptions.NodeHasBeenRemovedException;
 
 import org.json.JSONArray;

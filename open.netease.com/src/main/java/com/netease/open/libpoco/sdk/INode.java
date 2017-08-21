@@ -1,4 +1,4 @@
-package com.netease.open.libpoco.sdk.simple;
+package com.netease.open.libpoco.sdk;
 
 import com.netease.open.libpoco.sdk.exceptions.NoSuchAttributeException;
 import com.netease.open.libpoco.sdk.exceptions.NodeHasBeenRemovedException;

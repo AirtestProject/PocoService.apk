@@ -2,8 +2,6 @@ package com.netease.open.libpoco.sdk;
 
 import android.annotation.SuppressLint;
 
-import com.netease.open.libpoco.sdk.simple.IDumper;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

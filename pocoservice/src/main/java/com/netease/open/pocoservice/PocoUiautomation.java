@@ -8,11 +8,11 @@ import android.view.accessibility.AccessibilityEvent;
 import com.netease.open.libpoco.sdk.IPocoUiautomation;
 import com.netease.open.libpoco.sdk.IScreen;
 import com.netease.open.libpoco.sdk.AbstractNode;
-import com.netease.open.libpoco.sdk.simple.Attributor;
-import com.netease.open.libpoco.sdk.simple.IDumper;
+import com.netease.open.libpoco.sdk.Attributor;
+import com.netease.open.libpoco.sdk.IDumper;
 import com.netease.open.libpoco.sdk.IInput;
-import com.netease.open.libpoco.sdk.simple.ISelector;
-import com.netease.open.libpoco.sdk.simple.Selector;
+import com.netease.open.libpoco.sdk.ISelector;
+import com.netease.open.libpoco.sdk.Selector;
 
 /**
  * Created by adolli on 2017/7/13.
