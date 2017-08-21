@@ -44,8 +44,8 @@ public class Node extends AbstractNode {
     };
 
     public AccessibilityNodeInfo node;
-    private int screenWidth_ = 0;
-    private int screenHeight_ = 0;
+    protected int screenWidth_ = 0;
+    protected int screenHeight_ = 0;
 
     public Node(AccessibilityNodeInfo node, int screenW, int screenH) {
         super();
