@@ -5,17 +5,13 @@ import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Context;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject;
-import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.UiSelector;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.support.test.InstrumentationRegistry;
 
-import com.netease.open.poco.sdk.AbstractNode;
-import com.netease.open.poco.sdk.IScreen;
-import com.netease.open.poco.sdk.simple.IDumper;
-import com.netease.open.poco.sdk.simple.Selector;
+import com.netease.open.libpoco.sdk.AbstractNode;
+import com.netease.open.libpoco.sdk.IScreen;
+import com.netease.open.libpoco.sdk.simple.IDumper;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,1 +1,1 @@
-include ':pocoservice'
+include ':pocoservice', ':open.netease.com'

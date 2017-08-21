@@ -5,14 +5,14 @@ import android.app.UiAutomation;
 import android.content.Context;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.netease.open.poco.sdk.IPocoUiautomation;
-import com.netease.open.poco.sdk.IScreen;
-import com.netease.open.poco.sdk.AbstractNode;
-import com.netease.open.poco.sdk.simple.Attributor;
-import com.netease.open.poco.sdk.simple.IDumper;
-import com.netease.open.poco.sdk.IInputer;
-import com.netease.open.poco.sdk.simple.ISelector;
-import com.netease.open.poco.sdk.simple.Selector;
+import com.netease.open.libpoco.sdk.IPocoUiautomation;
+import com.netease.open.libpoco.sdk.IScreen;
+import com.netease.open.libpoco.sdk.AbstractNode;
+import com.netease.open.libpoco.sdk.simple.Attributor;
+import com.netease.open.libpoco.sdk.simple.IDumper;
+import com.netease.open.libpoco.sdk.IInput;
+import com.netease.open.libpoco.sdk.simple.ISelector;
+import com.netease.open.libpoco.sdk.simple.Selector;
 
 /**
  * Created by adolli on 2017/7/13.
@@ -25,7 +25,7 @@ public class PocoUiautomation implements IPocoUiautomation {
     public IDumper<AbstractNode> dumper = null;
     public ISelector<AbstractNode> selector = null;
     public Attributor attributor = null;
-    public IInputer inputer = null;
+    public IInput inputer = null;
     public IScreen screen = null;
 
     public PocoUiautomation(Context context, UiAutomation ui) {
@@ -35,7 +35,7 @@ public class PocoUiautomation implements IPocoUiautomation {
         this.dumper = new Dumper(this.context, this.ui);
         this.selector = new Selector(this.dumper);
         this.attributor = new Attributor();
-        this.inputer = new Inputer(this.context, this.ui);
+        this.inputer = new Input(this.context, this.ui);
         this.screen = new Screen(this.context, this.ui);
 
         AccessibilityServiceInfo accessibilityServiceInfo = this.ui.getServiceInfo();

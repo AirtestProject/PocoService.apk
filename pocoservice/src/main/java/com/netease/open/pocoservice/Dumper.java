@@ -6,8 +6,9 @@ import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.netease.open.poco.sdk.AbstractNode;
-import com.netease.open.poco.sdk.AbstractDumper;
+import com.netease.open.libpoco.Node;
+import com.netease.open.libpoco.sdk.AbstractNode;
+import com.netease.open.libpoco.sdk.AbstractDumper;
 
 /**
  * Created by adolli on 2017/7/19.
@@ -26,7 +27,7 @@ public class Dumper extends AbstractDumper {
     @Override
     public AbstractNode getRoot() {
         int[] portSize = getPortSize();
-        return new Node(this.context, this.ui.getRootInActiveWindow(), portSize[0], portSize[1]);
+        return new Node(this.ui.getRootInActiveWindow(), portSize[0], portSize[1]);
     }
 
     @Override

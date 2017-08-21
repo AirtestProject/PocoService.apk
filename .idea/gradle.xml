@@ -9,6 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/open.netease.com" />
             <option value="$PROJECT_DIR$/pocoservice" />
           </set>
         </option>

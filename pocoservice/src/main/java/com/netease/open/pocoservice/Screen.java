@@ -8,7 +8,7 @@ import android.util.Base64;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.netease.open.poco.sdk.IScreen;
+import com.netease.open.libpoco.sdk.IScreen;
 
 import java.io.ByteArrayOutputStream;
 
