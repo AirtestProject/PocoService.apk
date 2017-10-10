@@ -71,10 +71,11 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
             case "/hierarchy":
                 try {
                     ret = this.dumper.dumpHierarchy().toString();
+                    System.out.println(ret);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                mimeType = "application/json";
+                mimeType = "application/json; charset=utf-8";
                 break;
             case "/screen_size":
                 int[] size = this.screen.getPortSize();
@@ -82,7 +83,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 jsize.put(size[0]);
                 jsize.put(size[1]);
                 ret = jsize.toString();
-                mimeType = "application/json";
+                mimeType = "application/json; charset=utf-8";
                 break;
             case "/screen":
                 String paramWidth = session.getParms().get("width");
@@ -98,7 +99,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 jsize2.put(size2[0]);
                 jsize2.put(size2[1]);
                 ret = jsize2.toString();
-                mimeType = "application/json";
+                mimeType = "application/json; charset=utf-8";
                 break;
             case "/hierarchy_size2":
                 UiDevice uidev = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -106,7 +107,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 jsize3.put(uidev.getDisplayHeight());
                 jsize3.put(uidev.getDisplayWidth());
                 ret = jsize3.toString();
-                mimeType = "application/json";
+                mimeType = "application/json; charset=utf-8";
                 break;
 //            case "/test_set_text":
 //                UiDevice uidev2 = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());

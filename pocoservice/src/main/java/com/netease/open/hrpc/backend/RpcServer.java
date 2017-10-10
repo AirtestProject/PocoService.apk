@@ -2,6 +2,7 @@ package com.netease.open.hrpc.backend;
 
 import android.annotation.TargetApi;
 import android.util.JsonReader;
+import android.util.JsonWriter;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONArray;
@@ -55,7 +56,7 @@ public class RpcServer extends NanoHTTPD {
         System.out.println(req.toString());
         JSONObject resp = this.onRequest(req);
         if (resp != null) {
-            return newFixedLengthResponse(resp.toString());
+            return newFixedLengthResponse(Response.Status.OK, "application/json; charset=utf-8", resp.toString());
         } else {
             return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "server internal error. response is null");
         }
