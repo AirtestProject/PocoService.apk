@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.netease.open.libpoco.sdk.AbstractNode;
-import com.netease.open.libpoco.sdk.exceptions.NoSuchAttributeException;
 import com.netease.open.libpoco.sdk.exceptions.NodeHasBeenRemovedException;
 import com.netease.open.libpoco.sdk.exceptions.UnableToSetAttributeException;
 
@@ -26,22 +25,6 @@ import java.util.Map;
 
 @SuppressLint("NewApi")
 public class Node extends AbstractNode {
-    public static String[] SecondaryAttributes = new String[] {
-            "resourceId",
-            "package",
-            "desc",
-            "text",
-            "enabled",
-            "checkable",
-            "checked",
-            "focusable",
-            "focused",
-            "editalbe",
-            "selected",
-            "touchable",
-            "longClickable",
-            "boundsInParent",
-    };
 
     public AccessibilityNodeInfo node;
     protected int screenWidth_ = 0;
@@ -95,7 +78,7 @@ public class Node extends AbstractNode {
     }
 
     @Override
-    public Object getAttr(String attrName) throws NoSuchAttributeException, NodeHasBeenRemovedException {
+    public Object getAttr(String attrName) throws NodeHasBeenRemovedException {
         if (this.node == null) {
             throw new NodeHasBeenRemovedException(attrName, null);
         }
@@ -189,27 +172,6 @@ public class Node extends AbstractNode {
                 } catch (JSONException e) {}
                 ret = zOrders;
                 break;
-            default:
-                ret = getSecondaryAttr(attrName);
-        }
-        return ret;
-    }
-
-    @Override
-    public Map<String, Object> enumerateAttrs() {
-        Map<String, Object> ret = new HashMap<>();
-        for (String attr : RequiredAttributes) {
-            ret.put(attr, this.getAttr(attr));
-        }
-        for (String attr : SecondaryAttributes) {
-            ret.put(attr, this.getAttr(attr));
-        }
-        return ret;
-    }
-
-    private Object getSecondaryAttr(String attrName) {
-        Object ret = null;
-        switch (attrName) {
             case "resourceId":
                 CharSequence resid = node.getViewIdResourceName();
                 if (resid != null) {
@@ -262,7 +224,32 @@ public class Node extends AbstractNode {
                 ret = node.isLongClickable();
                 break;
             default:
-                throw new NoSuchAttributeException(attrName, this.node);
+                ret = super.getAttr(attrName);
+        }
+        return ret;
+    }
+
+    public List<String> getAvailableAttributeNames() {
+        List<String> ret = super.getAvailableAttributeNames();
+        String[] a = new String[] {
+                "resourceId",
+                "package",
+                "desc",
+                "text",
+                "enabled",
+                "checkable",
+                "checked",
+                "focusable",
+                "focused",
+                "editalbe",
+                "selected",
+                "touchable",
+                "longClickable",
+                "boundsInParent",
+        };
+
+        for (String n : a) {
+            ret.add(n);
         }
         return ret;
     }

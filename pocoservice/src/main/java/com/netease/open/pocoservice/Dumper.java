@@ -30,8 +30,7 @@ public class Dumper extends AbstractDumper {
         return new Node(this.ui.getRootInActiveWindow(), portSize[0], portSize[1]);
     }
 
-    @Override
-    public int[] getPortSize() {
+    private int[] getPortSize() {
         WindowManager wm = (WindowManager) this.context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point dimm = new Point();

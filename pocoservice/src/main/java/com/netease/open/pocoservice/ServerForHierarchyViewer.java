@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Context;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.support.test.InstrumentationRegistry;
@@ -94,7 +95,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 ret = (String) this.screen.getScreen(width);
                 break;
             case "/hierarchy_size":
-                int[] size2 = this.dumper.getPortSize();
+                int[] size2 = this.screen.getPortSize();
                 JSONArray jsize2 = new JSONArray();
                 jsize2.put(size2[0]);
                 jsize2.put(size2[1]);

@@ -10,11 +10,4 @@ import org.json.JSONObject;
 public interface IDumper <NodeType> extends Dumpable {
 
     NodeType getRoot();
-
-    /**
-     * 以渲染树坐标系为准的视口尺寸
-     *
-     * @return [width, height] in pixels
-     */
-    int[] getPortSize();
 }
