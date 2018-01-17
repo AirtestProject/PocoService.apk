@@ -22,17 +22,7 @@ public class TestActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.i("PocoService", "onResume");
-
-        PackageManager pm = getPackageManager();
-        ResolveInfo homeInfo = pm.resolveActivity(new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_HOME), 0);
-
-        ActivityInfo ai = homeInfo.activityInfo;
-        Intent startIntent = new Intent(Intent.ACTION_MAIN);
-        startIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        startIntent.setComponent(new ComponentName(ai.packageName, ai.name));
-        startActivity(startIntent);
-
+        super.moveTaskToBack(true);
         Toast.makeText(getApplicationContext(), "poco service is running!", Toast.LENGTH_SHORT).show();
     }
 }
