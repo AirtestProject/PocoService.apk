@@ -68,7 +68,7 @@ public class Input implements IInput {
                 Thread.sleep(interval);
             } catch (InterruptedException e) {
             }
-            moveTo((int)(x1 + step * dx), (int)(y1 + step * dy));
+            moveTo(x1 + step * dx, y1 + step * dy);
         }
         try {
             Thread.sleep(interval);
