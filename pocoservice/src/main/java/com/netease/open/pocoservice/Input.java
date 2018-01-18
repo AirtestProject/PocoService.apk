@@ -45,22 +45,14 @@ public class Input implements IInput {
 
     @Override
     public void longClick(double x, double y, double duration) {
-        MotionEvent down = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, (float) x, (float) y, 0);
-        down.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-        this.ui.injectInputEvent(down, true);
-
-        // long click sleep 3s
+        down(x, y);
         try {
+            // long click sleep 3s
             Thread.sleep((int) (duration * 1000));
         } catch (InterruptedException e) {
+        } finally {
+            up(x, y);
         }
-
-        MotionEvent up = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, (float) x, (float) y, 0);
-        up.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-        this.ui.injectInputEvent(up, true);
-
-        down.recycle();
-        up.recycle();
     }
 
 
