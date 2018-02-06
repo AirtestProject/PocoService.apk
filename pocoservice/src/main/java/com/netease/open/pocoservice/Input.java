@@ -18,18 +18,19 @@ import com.netease.open.libpoco.sdk.IInput;
 
 public class Input implements IInput {
     private Context context;
-    private UiAutomation ui = null;
+    private UiAutomationConnection uiConnn = null;
 
-    public Input(Context context, UiAutomation ui) {
+    public Input(Context context, UiAutomationConnection uiConnn) {
         this.context = context;
-        this.ui = ui;
+        this.uiConnn = uiConnn;
     }
 
     @Override
     public void keyevent(int keycode) {
         // TODO： 待测试
-        this.ui.injectInputEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keycode), true);
-        this.ui.injectInputEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode), true);
+        UiAutomation uiauto = this.uiConnn.get();
+        uiauto.injectInputEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keycode), true);
+        uiauto.injectInputEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode), true);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class Input implements IInput {
         double fy = y * portSize[1];
         MotionEvent evt = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, ((float)fx), ((float)fy), 0);
         evt.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-        this.ui.injectInputEvent(evt, true);
+        this.uiConnn.get().injectInputEvent(evt, true);
         evt.recycle();
     }
 
@@ -101,7 +102,7 @@ public class Input implements IInput {
         double fy = y * portSize[1];
         MotionEvent evt = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, ((float)fx), ((float)fy), 0);
         evt.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-        this.ui.injectInputEvent(evt, true);
+        this.uiConnn.get().injectInputEvent(evt, true);
         evt.recycle();
     }
 
@@ -111,7 +112,7 @@ public class Input implements IInput {
         double fy = y * portSize[1];
         MotionEvent evt = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, ((float)fx), ((float)fy), 0);
         evt.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-        this.ui.injectInputEvent(evt, true);
+        this.uiConnn.get().injectInputEvent(evt, true);
         evt.recycle();
     }
 }

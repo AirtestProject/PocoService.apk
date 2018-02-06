@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Context;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.support.test.InstrumentationRegistry;
@@ -30,22 +29,24 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
     private static final String TAG = ServerForHierarchyViewer.class.getName();
 
     private Context context;
-    private UiAutomation ui;
+    private UiAutomationConnection uiConn;
 
     private IDumper<AbstractNode> dumper;
     private IScreen screen;
 
 
-    public ServerForHierarchyViewer(Context context, UiAutomation ui) throws IOException {
+    public ServerForHierarchyViewer(Context context, UiAutomationConnection uiConn) throws IOException {
         super("0.0.0.0", 10080);  // 将端口forward出来访问
 
         this.context = context;
-        this.ui = ui;
+        this.uiConn = uiConn;
 
-        this.dumper = new Dumper(this.context, this.ui);
-        this.screen = new Screen(this.context, this.ui);
+        this.dumper = new Dumper(this.context, this.uiConn);
+        this.screen = new Screen(this.context, this.uiConn);
 
-        AccessibilityServiceInfo accessibilityServiceInfo = this.ui.getServiceInfo();
+        UiAutomation uiauto = this.uiConn.get();
+
+        AccessibilityServiceInfo accessibilityServiceInfo = uiauto.getServiceInfo();
         // 监听的事件类型
         accessibilityServiceInfo.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;
         // 反馈方式
@@ -55,7 +56,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS |
                 AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
 
-        this.ui.setServiceInfo(accessibilityServiceInfo);
+        uiauto.setServiceInfo(accessibilityServiceInfo);
 
         Log.i(TAG, "server listening on 127.0.0.1:10080");
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
@@ -110,12 +111,6 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 ret = jsize3.toString();
                 mimeType = "application/json; charset=utf-8";
                 break;
-//            case "/test_set_text":
-//                UiDevice uidev2 = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-//                UiSelector sel = new UiSelector();
-//                sel.resourceId("com.netease.my:id/netease_mpay__login_urs");
-//                UiObject obj = uidev2.findObject(sel);
-//                obj.clearTextField();
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, ret);
     }

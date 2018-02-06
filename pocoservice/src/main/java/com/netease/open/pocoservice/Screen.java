@@ -1,6 +1,5 @@
 package com.netease.open.pocoservice;
 
-import android.app.UiAutomation;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -18,11 +17,11 @@ import java.io.ByteArrayOutputStream;
 
 public class Screen implements IScreen {
     private Context context;
-    private UiAutomation ui;
+    private UiAutomationConnection uiConn;
 
-    public Screen(Context context, UiAutomation ui) {
+    public Screen(Context context, UiAutomationConnection uiConn) {
         this.context = context;
-        this.ui = ui;
+        this.uiConn = uiConn;
     }
 
     @Override
@@ -37,7 +36,7 @@ public class Screen implements IScreen {
     @Override
     public Object getScreen(int width) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Bitmap screen = this.ui.takeScreenshot();
+        Bitmap screen = this.uiConn.get().takeScreenshot();
         int height = width * screen.getHeight() / screen.getWidth();
         screen = Bitmap.createScaledBitmap(screen, width, height, true);
         screen.compress(Bitmap.CompressFormat.JPEG, 75, stream);

@@ -16,9 +16,9 @@ import com.netease.open.libpoco.sdk.AbstractDumper;
 
 public class Dumper extends AbstractDumper {
     private Context context;
-    private UiAutomation ui;
+    private UiAutomationConnection ui;
 
-    public Dumper(Context context, UiAutomation ui) {
+    public Dumper(Context context, UiAutomationConnection ui) {
         super();
         this.context = context;
         this.ui = ui;
@@ -27,7 +27,7 @@ public class Dumper extends AbstractDumper {
     @Override
     public AbstractNode getRoot() {
         int[] portSize = getPortSize();
-        return new Node(this.ui.getRootInActiveWindow(), portSize[0], portSize[1]);
+        return new Node(this.ui.get().getRootInActiveWindow(), portSize[0], portSize[1]);
     }
 
     private int[] getPortSize() {

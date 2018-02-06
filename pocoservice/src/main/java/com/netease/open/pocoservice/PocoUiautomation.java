@@ -20,7 +20,7 @@ import com.netease.open.libpoco.sdk.Selector;
 
 public class PocoUiautomation implements IPocoUiautomation {
     private Context context = null;
-    private UiAutomation ui = null;
+    private UiAutomationConnection uiConn = null;
 
     public IDumper<AbstractNode> dumper = null;
     public ISelector<AbstractNode> selector = null;
@@ -28,17 +28,19 @@ public class PocoUiautomation implements IPocoUiautomation {
     public IInput inputer = null;
     public IScreen screen = null;
 
-    public PocoUiautomation(Context context, UiAutomation ui) {
+    public PocoUiautomation(Context context, UiAutomationConnection uiConn) {
         this.context = context;
-        this.ui = ui;
+        this.uiConn = uiConn;
 
-        this.dumper = new Dumper(this.context, this.ui);
+        this.dumper = new Dumper(this.context, this.uiConn);
         this.selector = new Selector(this.dumper);
         this.attributor = new Attributor();
-        this.inputer = new Input(this.context, this.ui);
-        this.screen = new Screen(this.context, this.ui);
+        this.inputer = new Input(this.context, this.uiConn);
+        this.screen = new Screen(this.context, this.uiConn);
 
-        AccessibilityServiceInfo accessibilityServiceInfo = this.ui.getServiceInfo();
+        UiAutomation uiauto = this.uiConn.get();
+
+        AccessibilityServiceInfo accessibilityServiceInfo = uiauto.getServiceInfo();
         // 监听的事件类型
         accessibilityServiceInfo.eventTypes = AccessibilityEvent.TYPES_ALL_MASK;
         // 反馈方式
@@ -47,6 +49,6 @@ public class PocoUiautomation implements IPocoUiautomation {
         accessibilityServiceInfo.flags |=
                 AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS |
                 AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
-        this.ui.setServiceInfo(accessibilityServiceInfo);
+        uiauto.setServiceInfo(accessibilityServiceInfo);
     }
 }

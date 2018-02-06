@@ -26,13 +26,13 @@ public class InstrumentedTestAsLauncher {
     @Test
     public void launch() throws Exception {
         Instrumentation ins = InstrumentationRegistry.getInstrumentation();
-        UiAutomation ui = ins.getUiAutomation();
+        UiAutomationConnection uiConn = new UiAutomationConnection(ins);
         Context context = InstrumentationRegistry.getTargetContext();
 
-        new ServerForHierarchyViewer(InstrumentationRegistry.getTargetContext(), ui);
+        new ServerForHierarchyViewer(InstrumentationRegistry.getTargetContext(), uiConn);
 
         RpcServer rpc = new RpcServer("0.0.0.0", 10081);
-        rpc.export("poco-uiautomation-framework", new PocoUiautomation(context, ui));
+        rpc.export("poco-uiautomation-framework", new PocoUiautomation(context, uiConn));
 
         class test {
             public String val = "123";
