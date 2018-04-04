@@ -15,6 +15,7 @@ import com.netease.open.libpoco.sdk.IDumper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -70,6 +71,20 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
         String mimeType = NanoHTTPD.MIME_PLAINTEXT;
 
         switch (path) {
+            case "/uiautomation/connectionState":
+                JSONObject connectionState = new JSONObject();
+                try {
+                    try {
+                        this.uiConn.get().getRootInActiveWindow();
+                        connectionState.put("connected", true);
+                    } catch (IllegalStateException e) {
+                        connectionState.put("connected", false);
+                    }
+                }  catch (JSONException e2) {
+                }
+                ret = connectionState.toString();
+                mimeType = "application/json; charset=utf-8";
+                break;
             case "/hierarchy":
                 try {
                     ret = this.dumper.dumpHierarchy().toString();

@@ -51,4 +51,13 @@ public class PocoUiautomation implements IPocoUiautomation {
                 AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
         uiauto.setServiceInfo(accessibilityServiceInfo);
     }
+
+    public boolean uiAutomationConnected() {
+        try {
+            this.uiConn.get().getRootInActiveWindow();
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
 }
