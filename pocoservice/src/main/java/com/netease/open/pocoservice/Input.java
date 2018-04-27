@@ -181,7 +181,7 @@ public class Input implements IInput {
 
     // 测试用
     public void testMultiGesture() throws InterruptedException {
-        System.out.println("testMultiGesture");
+        Log.d(TAG, "testMultiGesture");
         MotionEvent.PointerCoords[] pcs1 = makeMPCs(new float[][]{
                 {100, 100},
                 {200, 200},
@@ -200,7 +200,7 @@ public class Input implements IInput {
 //                {700, 240},
 //        });
         performMultiPointerGesture(pcs1, pcs2);
-        System.out.println("testMultiGesture - end");
+        Log.d(TAG, "testMultiGesture - end");
     }
 
     private int[] getPortSize() {
@@ -297,7 +297,6 @@ public class Input implements IInput {
 
     private boolean injectEvent(MotionEvent evt, boolean sync) {
         boolean result = this.uiConnn.get().injectInputEvent(evt, sync);
-        System.out.println(evt + " " + result);
         return result;
     }
     private boolean injectEvent(MotionEvent evt) {
