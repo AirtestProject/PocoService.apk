@@ -9,5 +9,6 @@ import org.json.JSONObject;
 
 public interface Dumpable {
     JSONObject dumpHierarchy() throws JSONException;
+    JSONObject dumpHierarchy(boolean onlyVisibleNode) throws JSONException;
 
 }

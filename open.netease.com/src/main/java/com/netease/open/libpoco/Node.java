@@ -86,6 +86,9 @@ public class Node extends AbstractNode {
             case "name":
                 ret = node.getViewIdResourceName();
                 if (ret == null) {
+                    ret = node.getContentDescription();
+                }
+                if (ret == null) {
                     ret = node.getClassName();
                 }
                 if (ret != null) {
@@ -221,6 +224,12 @@ public class Node extends AbstractNode {
             case "longClickable":
                 ret = node.isLongClickable();
                 break;
+            case "scrollable":
+                ret = node.isScrollable();
+                break;
+            case "dismissable":
+                ret = node.isDismissable();
+                break;
             default:
                 ret = super.getAttr(attrName);
         }
@@ -244,6 +253,8 @@ public class Node extends AbstractNode {
                 "touchable",
                 "longClickable",
                 "boundsInParent",
+                "scrollable",
+                "dismissable",
         };
 
         for (String n : a) {

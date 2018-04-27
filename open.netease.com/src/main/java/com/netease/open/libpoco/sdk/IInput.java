@@ -1,5 +1,10 @@
 package com.netease.open.libpoco.sdk;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.List;
+
 /**
  * Created by adolli on 2017/7/13.
  */
@@ -15,4 +20,5 @@ public interface IInput {
 
     void swipe(double x1, double y1, double x2, double y2, double duration);
 
+    void applyMotionEvents(JSONArray events) throws JSONException;
 }

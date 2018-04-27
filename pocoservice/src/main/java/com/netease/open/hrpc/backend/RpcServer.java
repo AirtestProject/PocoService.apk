@@ -147,7 +147,8 @@ public class RpcServer extends NanoHTTPD {
                             for (int j = 0; j < paramTypes.length; j++) {
                                 Class<?> parType = paramTypes[j];
                                 Class<?> argType = calcAuguments.get(j).getClass();
-//                                System.out.println(String.format("%s | %s | %s | %s | %s", _overloadMethodName, parType, argType, parType.isAssignableFrom(argType), primitiveTypeAssignableFrom(parType, argType)));
+                                // 下面这行用来调试重载函数参数匹配
+                                // ystem.out.println(String.format("%s | %s | %s | %s | %s", _overloadMethodName, parType, argType, parType.isAssignableFrom(argType), primitiveTypeAssignableFrom(parType, argType)));
                                 if (parType.isArray() != argType.isArray()) {
                                     matched = false;
                                     break;
@@ -168,7 +169,9 @@ public class RpcServer extends NanoHTTPD {
                     if (func != null) {
                         obj = func.invoke(_this, calcAuguments.toArray());
                     } else {
-                        throw new NoSuchMethodException(String.format("\"%s\" does not have (overload)method name \"%s\", arguments are %s", obj, _overloadMethodName, calcAuguments));
+                        throw new NoSuchMethodException(String.format(
+                                "\"%s\" does not have (overload)method name \"%s\", arguments are %s, arguments.size() is %s",
+                                obj, _overloadMethodName, calcAuguments, calcAuguments.size()));
                     }
                     _overloadMethodName = "";
 
@@ -248,7 +251,11 @@ public class RpcServer extends NanoHTTPD {
             }
 
         } catch (Exception e) {
-            resp = this.buildErrorResponse(reqId, sessionId, e.getClass().getName(), e.getMessage(), "", ExceptionUtils.getStackTrace(e));
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                cause = e;
+            }
+            resp = this.buildErrorResponse(reqId, sessionId, cause.getClass().getName(), cause.getMessage(), "", ExceptionUtils.getStackTrace(cause));
         }
 
         return resp;

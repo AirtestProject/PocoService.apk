@@ -17,10 +17,14 @@ public abstract class AbstractDumper implements IDumper<AbstractNode> {
     public static String TAG = "AbstractDumper";
 
     public JSONObject dumpHierarchy() throws JSONException {
-        return this.dumpHierarchyImpl(this.getRoot());
+        return this.dumpHierarchy(true);
     }
 
-    public JSONObject dumpHierarchyImpl(AbstractNode node) throws JSONException {
+    public JSONObject dumpHierarchy(boolean onlyVisibleNode) throws JSONException {
+        return this.dumpHierarchyImpl(this.getRoot(), onlyVisibleNode);
+    }
+
+    public JSONObject dumpHierarchyImpl(AbstractNode node, boolean onlyVisibleNode) throws JSONException {
         if (node == null) {
             // return if still null
             return null;
@@ -35,8 +39,8 @@ public abstract class AbstractDumper implements IDumper<AbstractNode> {
         JSONArray children = new JSONArray();
 
         for (AbstractNode child : node.getChildren()) {
-            if ((boolean) child.getAttr("visible")) {
-                children.put(this.dumpHierarchyImpl(child));
+            if (!onlyVisibleNode || (boolean) child.getAttr("visible")) {
+                children.put(this.dumpHierarchyImpl(child, onlyVisibleNode));
             }
         }
         if (children.length() > 0) {

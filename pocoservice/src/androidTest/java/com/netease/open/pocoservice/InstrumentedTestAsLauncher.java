@@ -5,6 +5,7 @@ import android.app.UiAutomation;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.UiObject;
 
 import com.netease.open.hrpc.backend.RpcServer;
 
@@ -33,6 +34,8 @@ public class InstrumentedTestAsLauncher {
 
         RpcServer rpc = new RpcServer("0.0.0.0", 10081);
         rpc.export("poco-uiautomation-framework", new PocoUiautomation(context, uiConn));
+
+        UiObject ojb;
 
         class test {
             public String val = "123";
