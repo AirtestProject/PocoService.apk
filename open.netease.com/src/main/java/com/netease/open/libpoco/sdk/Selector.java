@@ -63,7 +63,12 @@ public class Selector implements ISelector<AbstractNode> {
                     if (op.equals("/") && i != 0) {
                         _maxDepth = 1;
                     }
-                    midResult.addAll(this.selectImpl(arg, true, parent, _maxDepth, onlyVisibleNode, false));
+                    List<AbstractNode> _res = this.selectImpl(arg, true, parent, _maxDepth, onlyVisibleNode, false);
+                    for (AbstractNode r : _res) {
+                        if (!result.contains(r)) {
+                            midResult.add(r);
+                        }
+                    }
                 }
                 parents = midResult;
             }
@@ -74,7 +79,12 @@ public class Selector implements ISelector<AbstractNode> {
             JSONArray query2 = args.getJSONArray(1);
             List<AbstractNode> result1 = this.selectImpl(query1, multiple, root, maxDepth, onlyVisibleNode, includeRoot);
             for (AbstractNode n : result1) {
-                result.addAll(this.selectImpl(query2, multiple, n.getParent(), 1, onlyVisibleNode, includeRoot));
+                List<AbstractNode> sibling_result = this.selectImpl(query2, multiple, n.getParent(), 1, onlyVisibleNode, includeRoot);
+                for (AbstractNode r : sibling_result) {
+                    if (!result.contains(r)) {
+                        result.add(r);
+                    }
+                }
             }
         } else if (op.equals("index")) {
             JSONArray cond1 = args.getJSONArray(0);
@@ -96,7 +106,9 @@ public class Selector implements ISelector<AbstractNode> {
 
         if (this.matcher.match(cond, node)) {
             if (includeRoot) {
-                outResult.add(node);
+                if (!outResult.contains(node)) {
+                    outResult.add(node);
+                }
                 if (!multiple) {
                     return true;
                 }
