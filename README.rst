@@ -1,9 +1,7 @@
 
-.. image:: doc/img/logo-simple-poco-sdk-android.png
-    :width: 150px
-    :height: 150px
-    :scale: 24.31%
-    :alt: poco-sdk for Andoird
+.. raw:: html
+	
+	<img src='doc/img/logo-simple-poco-sdk-android.png' width='150px' height='150px' alt='poco-sdk for Andoird' />
 
 PocoService.apk (poco-sdk for Andoird)
 ======================================
