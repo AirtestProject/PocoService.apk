@@ -11,3 +11,4 @@ This apk should be used with `poco uiautomation framework`_  together.
 .. |android poco sdk logo| image:: doc/img/logo-simple-poco-sdk-android.png
     :alt: poco-sdk for Andoird
     :width: 150px
+    :height: 150px
