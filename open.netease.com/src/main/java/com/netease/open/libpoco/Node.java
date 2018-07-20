@@ -85,10 +85,10 @@ public class Node extends AbstractNode {
         switch (attrName) {
             case "name":
                 ret = node.getViewIdResourceName();
-                if (ret == null) {
+                if (ret == null || ret.equals("")) {
                     ret = node.getContentDescription();
                 }
-                if (ret == null) {
+                if (ret == null || ret.toString().equals("")) {
                     ret = node.getClassName();
                 }
                 if (ret != null) {
