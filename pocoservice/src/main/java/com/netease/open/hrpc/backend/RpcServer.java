@@ -86,8 +86,7 @@ public class RpcServer extends NanoHTTPD {
 
         Object obj = this.get(uri);
         if (obj == null) {
-            resp = this.buildErrorResponse(reqId, sessionId, "RuntimeError", String.format("RPC object not found. uri=\"%s\"", uri), "", "");
-            return resp;
+            return this.buildErrorResponseObjectNotFound(reqId, sessionId, uri);
         }
 
         boolean shouldCacheIntermediateObj = method.length() != 0;
@@ -103,8 +102,7 @@ public class RpcServer extends NanoHTTPD {
                     String params = operation.getString(1);
                     Class<?> objCls = obj.getClass();
                     if (objCls == null) {
-                        resp = this.buildErrorResponse(reqId, sessionId, "RuntimeError", String.format("Cannot retrieve class of RPC object. uri=\"%s\"", uri), "", "");
-                        return resp;
+                        return this.buildErrorResponseObjectNotFound(reqId, sessionId, uri);
                     }
 
                     for (java.lang.reflect.Method m : objCls.getMethods()) {
@@ -121,19 +119,22 @@ public class RpcServer extends NanoHTTPD {
 
                 } else if (operator.equals("call")) {
                     // 构造要调用的参数
-                    ArrayList<Object> calcAuguments = new ArrayList<>();
+                    ArrayList<Object> calcArguments = new ArrayList<>();
                     JSONArray params = operation.getJSONArray(1);
                     for (int j = 0; j < params.length(); j++) {
                         String paramType = params.getJSONArray(j).getString(0);
                         Object param = params.getJSONArray(j).get(1);
                         if (paramType.equals("uri")) {
                             Object value = this.get(param.toString());
-                            calcAuguments.add(value);
+                            if (value == null) {
+                                return this.buildErrorResponseObjectNotFound(reqId, sessionId, uri);
+                            }
+                            calcArguments.add(value);
                         } else {
                             if (param.equals(JSONObject.NULL)) {
                                 param = null;
                             }
-                            calcAuguments.add(param);
+                            calcArguments.add(param);
                         }
                     }
 
@@ -141,12 +142,12 @@ public class RpcServer extends NanoHTTPD {
                     java.lang.reflect.Method func = null;
                     for (java.lang.reflect.Method m : _overloadMethods) {
                         Class<?>[] paramTypes = m.getParameterTypes();
-                        if (paramTypes.length == calcAuguments.size()) {
+                        if (paramTypes.length == calcArguments.size()) {
                             boolean matched = true;
 //                            System.out.println(m);
                             for (int j = 0; j < paramTypes.length; j++) {
                                 Class<?> parType = paramTypes[j];
-                                Class<?> argType = calcAuguments.get(j).getClass();
+                                Class<?> argType = calcArguments.get(j).getClass();
                                 // 下面这行用来调试重载函数参数匹配
                                 // ystem.out.println(String.format("%s | %s | %s | %s | %s", _overloadMethodName, parType, argType, parType.isAssignableFrom(argType), primitiveTypeAssignableFrom(parType, argType)));
                                 if (parType.isArray() != argType.isArray()) {
@@ -167,11 +168,11 @@ public class RpcServer extends NanoHTTPD {
                     _overloadMethods.clear();
 
                     if (func != null) {
-                        obj = func.invoke(_this, calcAuguments.toArray());
+                        obj = func.invoke(_this, calcArguments.toArray());
                     } else {
                         throw new NoSuchMethodException(String.format(
                                 "\"%s\" does not have (overload)method name \"%s\", arguments are %s, arguments.size() is %s",
-                                obj, _overloadMethodName, calcAuguments, calcAuguments.size()));
+                                obj, _overloadMethodName, calcArguments, calcArguments.size()));
                     }
                     _overloadMethodName = "";
 
@@ -222,7 +223,10 @@ public class RpcServer extends NanoHTTPD {
                     JSONArray params = operation.getJSONArray(1);
                     String fieldName = params.getString(0);
                     String argUri = params.getString(1);
-                    Object value = this.get(argUri);  // 要不要抛异常？
+                    Object value = this.get(argUri);
+                    if (value == null) {
+                        return this.buildErrorResponseObjectNotFound(reqId, sessionId, uri);
+                    }
                     Field field = objCls.getDeclaredField(fieldName);
                     field.set(obj, value);
 
@@ -314,6 +318,10 @@ public class RpcServer extends NanoHTTPD {
         return ret;
     }
 
+    private JSONObject buildErrorResponseObjectNotFound(String reqId, String sessionId, String uri) {
+        return this.buildErrorResponse(reqId, sessionId, "RemoteObjectNotFoundException", String.format("RPC object not found. uri=\"%s\"", uri), "", "");
+    }
+
     private String store(String uri, Object obj) {
         this.export(uri, obj);
         return uri;
@@ -324,7 +332,8 @@ public class RpcServer extends NanoHTTPD {
     }
 
     private Object get(String uri) {
-        return this.objUriStore_.get(uri);
+        Object obj = this.objUriStore_.get(uri);
+        return obj;
     }
 
     public void export(String uri, Object obj) {
