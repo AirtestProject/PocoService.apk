@@ -26,19 +26,24 @@ public abstract class AbstractNode implements INode {
     }
 
     public Object getAttr(String attrName) {
-        Map<String, Object> ret = new HashMap<>();
-        ret.put("name", "<Root>");
-        ret.put("type", "Root");
-        ret.put("visible", true);
-        ret.put("pos", new float[] {0, 0});
-        ret.put("size", new float[] {0, 0});
-        ret.put("scale", new float[] {0, 0});
-        ret.put("anchorPoint", new float[] {0.5f, 0.5f});
+        Map<String, Object> defaultAttrs = new HashMap<>();
+        defaultAttrs.put("name", "<Root>");
+        defaultAttrs.put("type", "Root");
+        defaultAttrs.put("visible", true);
+        defaultAttrs.put("pos", new float[] {0, 0});
+        defaultAttrs.put("size", new float[] {0, 0});
+        defaultAttrs.put("scale", new float[] {0, 0});
+        defaultAttrs.put("anchorPoint", new float[] {0.5f, 0.5f});
         Map<String, Object> zOrders = new HashMap<>();
         zOrders.put("global", 0);
         zOrders.put("local", 0);
-        ret.put("zOrders", zOrders);
-        return ret;
+        defaultAttrs.put("zOrders", zOrders);
+
+        if (defaultAttrs.containsKey(attrName)) {
+            return defaultAttrs.get(attrName);
+        } else {
+            return null;
+        }
     }
 
     public List<String> getAvailableAttributeNames() {
