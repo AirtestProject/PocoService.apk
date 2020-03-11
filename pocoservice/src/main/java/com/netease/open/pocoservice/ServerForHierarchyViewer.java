@@ -58,6 +58,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
 
         uiauto.setServiceInfo(accessibilityServiceInfo);
+        uiauto.setOnAccessibilityEventListener(new AccessibilityEventListener());
 
         Log.i(TAG, "server listening on 127.0.0.1:10080");
         start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
@@ -124,6 +125,17 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 jsize3.put(uidev.getDisplayHeight());
                 jsize3.put(uidev.getDisplayWidth());
                 ret = jsize3.toString();
+                mimeType = "application/json; charset=utf-8";
+                break;
+            case "/toast":
+                JSONObject toast = new JSONObject();
+                try {
+                    toast.put("msg", AccessibilityEventListener.getInstance().toastMessage);
+                    toast.put("time", AccessibilityEventListener.getInstance().toastTime);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                ret = toast.toString();
                 mimeType = "application/json; charset=utf-8";
                 break;
         }
