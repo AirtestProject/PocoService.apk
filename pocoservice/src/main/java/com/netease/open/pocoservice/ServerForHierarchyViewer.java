@@ -4,10 +4,13 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.test.uiautomator.UiDevice;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.support.test.InstrumentationRegistry;
+import android.widget.Toast;
 
 import com.netease.open.libpoco.sdk.AbstractNode;
 import com.netease.open.libpoco.sdk.IScreen;
@@ -34,6 +37,7 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
 
     private IDumper<AbstractNode> dumper;
     private IScreen screen;
+    Handler handler = new Handler(Looper.getMainLooper());
 
 
     public ServerForHierarchyViewer(Context context, UiAutomationConnection uiConn) throws IOException {
@@ -138,6 +142,18 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
                 ret = toast.toString();
                 mimeType = "application/json; charset=utf-8";
                 break;
+            case "/showToast":
+                final String text = session.getParms().get("toast");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(InstrumentationRegistry.getTargetContext(), text, Toast.LENGTH_LONG).show();
+                    }
+                });
+                ret = "{\"msg\":\"ok\"}";
+                mimeType = "application/json; charset=utf-8";
+                break;
+//            session.getParms()
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, ret);
     }
