@@ -5,6 +5,8 @@ import com.netease.open.libpoco.sdk.exceptions.NodeHasBeenRemovedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -112,7 +114,8 @@ public class Selector implements ISelector<AbstractNode> {
 
     private boolean selectTraverse(JSONArray cond, AbstractNode node, List<AbstractNode> outResult, boolean multiple, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
         // 剪掉不可见节点branch
-        if (onlyVisibleNode && !(boolean) node.getAttr("visible")) {
+        Object size = node.getAttr("size");
+        if (onlyVisibleNode && !(boolean) node.getAttr("visible") && (size.getClass().isArray() && Array.get(size, 0).equals((float)(0)) && Array.get(size, 1).equals((float)(0)))) {
             return false;
         }
 

@@ -37,10 +37,11 @@ public abstract class AbstractDumper implements IDumper<AbstractNode> {
 
         JSONObject result = new JSONObject();
         JSONArray children = new JSONArray();
-
         for (AbstractNode child : node.getChildren()) {
             if (!onlyVisibleNode || (boolean) child.getAttr("visible")) {
                 children.put(this.dumpHierarchyImpl(child, onlyVisibleNode));
+            }else if(String.valueOf(child.getAttr("name")).endsWith(".WebView")){
+                children.put(this.dumpHierarchyImpl(child, false));
             }
         }
         if (children.length() > 0) {

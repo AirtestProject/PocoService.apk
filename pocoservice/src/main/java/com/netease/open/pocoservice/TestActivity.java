@@ -23,6 +23,6 @@ public class TestActivity extends AppCompatActivity {
         super.onResume();
         Log.i("PocoService", "onResume");
         super.moveTaskToBack(true);
-        Toast.makeText(getApplicationContext(), "poco service is running!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "poco service is running", Toast.LENGTH_SHORT).show();
     }
 }
