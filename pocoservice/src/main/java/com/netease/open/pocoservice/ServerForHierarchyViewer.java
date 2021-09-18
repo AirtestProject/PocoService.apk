@@ -4,10 +4,10 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Context;
-import android.support.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiDevice;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import com.netease.open.libpoco.sdk.AbstractNode;
 import com.netease.open.libpoco.sdk.IScreen;
@@ -88,7 +88,6 @@ public class ServerForHierarchyViewer extends NanoHTTPD {
             case "/hierarchy":
                 try {
                     ret = this.dumper.dumpHierarchy().toString();
-                    System.out.println(ret);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

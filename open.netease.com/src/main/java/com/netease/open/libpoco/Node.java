@@ -3,7 +3,7 @@ package com.netease.open.libpoco;
 import android.annotation.SuppressLint;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.netease.open.libpoco.sdk.AbstractNode;
@@ -101,6 +101,7 @@ public class Node extends AbstractNode {
                 ret = node.getClassName().toString();
                 break;
             case "visible":
+                this.node.refresh();
                 boolean visible = node.isVisibleToUser();
                 if (!visible) {
                     ret = false;

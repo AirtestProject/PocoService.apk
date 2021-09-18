@@ -4,7 +4,7 @@ android {
     def cmd = 'git rev-list HEAD --count'
     def gitVersion = cmd.execute().text.trim().toInteger()
 
-    compileSdkVersion 25
+    compileSdkVersion 28
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "com.netease.open.pocoservice"
@@ -15,6 +15,9 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -23,6 +26,11 @@ android {
 }
 
 dependencies {
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     compile 'com.google.guava:guava:20.0'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:25.3.1'
