@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.netease.open.pocoservice"
         minSdkVersion 19
-        targetSdkVersion 22
+        targetSdkVersion 29
         versionCode gitVersion
         versionName "1.0.0." + gitVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
