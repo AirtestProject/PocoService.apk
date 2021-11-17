@@ -5,8 +5,6 @@ import com.netease.open.libpoco.sdk.exceptions.NodeHasBeenRemovedException;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -92,7 +90,8 @@ public class Selector implements ISelector<AbstractNode> {
             JSONArray cond1 = args.getJSONArray(0);
             int i = args.getInt(1);
             result = new LinkedList<>();
-            result.add(this.selectImpl(cond1, multiple, root, maxDepth, onlyVisibleNode, includeRoot).get(i));
+            // 如果是 array[1].xxx() 操作，multiple需要指定为true，否则会导致后续的操作因为只能拿到[0]而失败
+            result.add(this.selectImpl(cond1, true, root, maxDepth, onlyVisibleNode, includeRoot).get(i));
         } else if (op.equals("^")) {
             // parent
             // only select parent of the first matched UI element
@@ -115,8 +114,10 @@ public class Selector implements ISelector<AbstractNode> {
     private boolean selectTraverse(JSONArray cond, AbstractNode node, List<AbstractNode> outResult, boolean multiple, int maxDepth, boolean onlyVisibleNode, boolean includeRoot) throws JSONException {
         // 剪掉不可见节点branch
         Object size = node.getAttr("size");
-        if (onlyVisibleNode && !(boolean) node.getAttr("visible") && (size.getClass().isArray() && Array.get(size, 0).equals((float)(0)) && Array.get(size, 1).equals((float)(0)))) {
-            return false;
+        // 假如node.visible=false，就直接剪掉
+        if (onlyVisibleNode && !(boolean) node.getAttr("visible") && !(((JSONArray) size).get(0).equals(0) || ((JSONArray) size).get(1).equals(0))) {
+            // 但是在一些WebView中，虽然visible=false，但只有node.size=[0, 0]才剪掉
+                return false;
         }
 
         if (this.matcher.match(cond, node)) {
@@ -125,7 +126,15 @@ public class Selector implements ISelector<AbstractNode> {
                     outResult.add(node);
                 }
                 if (!multiple) {
-                    return true;
+                    // 如果只获取一个节点（默认是获取第0个），此处原本会直接返回true
+                    // 但有种可能的情况是，结果有多个，第一个结果正好是visible=false，这可能会导致后续对这个节点做处理时出现报错
+                    // 因此尝试在获取节点时，假如当前节点不可见，自动往后顺延一个节点
+                    // 如果所有的结果都是visible=false，会导致返回值为空，而不是返回一个不可见节点
+                    if (onlyVisibleNode && !(boolean) node.getAttr("visible")) {
+                        outResult.remove(node);
+                    } else {
+                        return true;
+                    }
                 }
             }
         }

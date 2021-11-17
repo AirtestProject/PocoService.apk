@@ -50,7 +50,12 @@ public class Node extends AbstractNode {
         List<AbstractNode> ret = new LinkedList<>();
         int childCount = this.node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            ret.add(new Node(node.getChild(i), this.screenWidth_, this.screenHeight_));
+            AccessibilityNodeInfo child = node.getChild(i);
+            if (child != null) {
+                // 在某些情况下（例如OPPO的安装界面），getChild可能会是null，因此增加一个判断，避免后续报错
+                // getChild为null不一定是没有节点，可能是厂商故意隐藏、或者是手机节点变动太快导致的
+                ret.add(new Node(node.getChild(i), this.screenWidth_, this.screenHeight_));
+            }
         }
         return ret;
     }
@@ -101,7 +106,9 @@ public class Node extends AbstractNode {
                 ret = node.getClassName().toString();
                 break;
             case "visible":
-                this.node.refresh();
+                // isVisibleToUser接口可能在设置-显示中设了放大的话，会错误地返回false
+                // 因此同步修改了Attributor，在获取pos或visible时额外增加一个refresh的调用
+                // 详见下面的refresh接口
                 boolean visible = node.isVisibleToUser();
                 if (!visible) {
                     ret = false;
@@ -230,6 +237,12 @@ public class Node extends AbstractNode {
                 break;
             case "dismissable":
                 ret = node.isDismissable();
+                break;
+            case "refresh":
+                // 部分手机如果设置-显示中，设了放大的话，可能会导致手机节点不能及时更新pos和visible信息
+                // 因此额外增加了一个refresh输出，没有新增接口，而是直接使用getAttr("refresh")来调用
+                // 这样写不太好，但是不需要修改Node的结构，在Android上临时使用
+                ret = node.refresh();
                 break;
             default:
                 ret = super.getAttr(attrName);

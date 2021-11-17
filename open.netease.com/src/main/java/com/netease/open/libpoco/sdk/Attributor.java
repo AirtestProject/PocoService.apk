@@ -18,6 +18,11 @@ public class Attributor {
         if (node == null) {
             throw new NodeHasBeenRemovedException(attrName, node);
         }
+        if (attrName.equals("visible") || attrName.equals("pos")) {
+            // 假如需要获取visible/pos，先强制执行一次refresh()，让节点状态更新到最新
+            // 详见Node中的refresh
+            node.getAttr("refresh");
+        }
         return node.getAttr(attrName);
     }
 

@@ -40,7 +40,10 @@ public abstract class AbstractDumper implements IDumper<AbstractNode> {
         for (AbstractNode child : node.getChildren()) {
             if (!onlyVisibleNode || (boolean) child.getAttr("visible")) {
                 children.put(this.dumpHierarchyImpl(child, onlyVisibleNode));
-            }else if(String.valueOf(child.getAttr("name")).endsWith(".WebView")){
+            }
+            else if(String.valueOf(child.getAttr("type")).endsWith(".WebView")){
+                // 这个改动主要是一些WebView如果使用了tbs引擎，会因为isVisibleToUser返回false而导致无法获取节点
+                // 测试时使用了腾讯自选股app的基金页面进行复现
                 children.put(this.dumpHierarchyImpl(child, false));
             }
         }
